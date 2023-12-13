@@ -17,7 +17,7 @@ func NewServer(fileManager *files.FileManager) Server {
 		fileManager: fileManager,
 	}
 
-	http.HandleFunc("/upload", s.handleUploadFile)
+	http.HandleFunc("/submit", s.handleSubmitFile)
 	http.HandleFunc("/download/", s.handleDownloadFile)
 
 	return s

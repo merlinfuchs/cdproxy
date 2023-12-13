@@ -20,7 +20,7 @@ go install github.com/merlinfuchs/cdproxy@latest
 
 ## Configuration
 
-CDProxy will for a file called `config.yaml` containing configuration.
+CDProxy will look for a file called `config.yaml` containing configuration.
 
 ```yaml
 host: 127.0.0.1
@@ -39,3 +39,37 @@ max_queue_size: 100 # Number of files that can wait to be processed in the queue
 max_workers: 8 # Number of files that can be processed at once, default number of CPU cores
 brotli_compression_level: 7
 ```
+
+## Usage
+
+### 1. Start the server
+
+```shell
+cdproxy
+```
+
+### 2. Submit a file
+
+```shell
+POST /submit
+```
+
+```json
+{
+  "original_url": "https://cdn.discordapp.com/...",
+  "original_expires_at": null, // ISO timestamp when the original url will expire (optiona, defaults to config value)
+  "expires_at": null, // ISO timestamp when the file expires (optional, defaults to config value)
+  "size": 42, // If you already know the size of the file you can set it here, this will prevent CDProxy from having to download it at all if it's too big (optional)
+  "max_size": 1000, // If the size of the file is lower than this it will be stored (optional, defaults to config value)
+  "metadata": { "user_id": "123" }, // Any metadata for the file (optional)
+  "wait": false // Whether to wait for the file to be processed or return instantly (optional)
+}
+```
+
+### 3. Download file
+
+```shell
+GET /download/<file_id>
+```
+
+### 4. Profit

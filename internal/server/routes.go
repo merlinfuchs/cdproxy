@@ -12,7 +12,7 @@ import (
 	"github.com/merlinfuchs/cdproxy/pkg"
 )
 
-func (s *Server) handleUploadFile(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleSubmitFile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
