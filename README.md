@@ -12,18 +12,30 @@ In September 2023 Discord has announced to introduce authentication to their CDN
 
 Some services heavily rely on storing these URLs and accessing at a later point. CDProxy can help mitigating the affects of this change by caching files for an extended period.
 
-## Configuration (WIP)
+## Installation
+
+```shell
+go install github.com/merlinfuchs/cdproxy@latest
+```
+
+## Configuration
 
 CDProxy will for a file called `config.yaml` containing configuration.
 
 ```yaml
-default_expiry: 0
-default_original_expiry: 86400 # 1 day
+host: 127.0.0.1
+port: 8080
+public_url: http://localhost:8080 # Where CDProxy is exposed, used to generate the URL for the file
 
-max_queue_size: 100
-max_workers: 8
+db_file_Name: cdproxy.db
+file_path: ./files
+download_timeout: 30 # timeout in seconds for downloading from the original url
 
-public_url: http://localhost:8080
+default_max_size: 104857600 # 100MB, in bytes
+default_expiry: 0 # in seconds, no expiry by default
+default_original_expiry: 86400 # when the original url will become invalid, default 24 hours
 
-brotli_compression_level: 4
+max_queue_size: 100 # Number of files that can wait to be processed in the queue
+max_workers: 8 # Number of files that can be processed at once, default number of CPU cores
+brotli_compression_level: 7
 ```
