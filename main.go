@@ -7,6 +7,7 @@ import (
 	"github.com/merlinfuchs/cdproxy/internal/db"
 	"github.com/merlinfuchs/cdproxy/internal/files"
 	"github.com/merlinfuchs/cdproxy/internal/server"
+	"github.com/merlinfuchs/cdproxy/internal/sftp"
 )
 
 func main() {
@@ -25,7 +26,12 @@ func main() {
 		panic(err)
 	}
 
-	fileManager := files.NewFileManager(db)
+	sftp, err := sftp.New()
+	if err != nil {
+		panic(err)
+	}
+
+	fileManager := files.NewFileManager(db, sftp)
 	fileManager.StartWorkers()
 
 	s := server.NewServer(fileManager)

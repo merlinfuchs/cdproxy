@@ -69,7 +69,7 @@ func (s *Server) handleDownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := file.Download()
+	res, err := file.Download(s.fileManager)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("failed to download file: %v\n", err)

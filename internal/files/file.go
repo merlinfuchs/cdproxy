@@ -6,11 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
-	"github.com/andybalholm/brotli"
 	"github.com/merlinfuchs/cdproxy/internal/config"
 	"gopkg.in/guregu/null.v4"
 )
@@ -27,9 +24,9 @@ type File struct {
 	Metadata          map[string]string
 }
 
-func (f *File) Download() (downloadFileResult, error) {
+func (f *File) Download(fm *FileManager) (downloadFileResult, error) {
 	if f.Hash.Valid {
-		body, err := readFile(f.Hash.String)
+		body, err := fm.sftp.ReadFile(f.Hash.String)
 		if err != nil {
 			return downloadFileResult{}, fmt.Errorf("failed to read file: %w", err)
 		}
@@ -78,55 +75,12 @@ func downloadFile(originalURL string) (downloadFileResult, error) {
 	return res, nil
 }
 
-func storeFile(body []byte) (string, error) {
+func hashFile(body []byte) (string, error) {
 	hasher := sha256.New()
 	hasher.Write(body)
 	hash := fmt.Sprintf("%x", hasher.Sum(nil))
 
-	path := filepath.Join(config.C.FilePath, hash)
-	file, err := os.Create(path)
-
-	writer := brotli.NewWriterLevel(file, config.C.BrotliCompressionLevel)
-	_, err = writer.Write(body)
-	if err != nil {
-		return "", fmt.Errorf("failed to write file: %w", err)
-	}
-
-	err = writer.Close()
-	if err != nil {
-		return "", fmt.Errorf("failed to brotli writer file: %w", err)
-	}
-
 	return hash, nil
-}
-
-func deleteFile(hash string) error {
-	path := filepath.Join(config.C.FilePath, hash)
-	err := os.Remove(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-		return err
-	}
-
-	return nil
-}
-
-func readFile(hash string) ([]byte, error) {
-	path := filepath.Join(config.C.FilePath, hash)
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-
-	reader := brotli.NewReader(file)
-	body, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %w", err)
-	}
-
-	return body, nil
 }
 
 type downloadFileResult struct {

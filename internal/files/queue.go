@@ -66,10 +66,12 @@ func (fm *FileManager) processQueueEntry(entry *FileQueueEntry) error {
 		}
 
 		if len(downloadRes.Body) <= int(maxSize) {
-			hashStr, err := storeFile(downloadRes.Body)
+			hashStr, err := hashFile(downloadRes.Body)
 			if err != nil {
 				return fmt.Errorf("failed to store file: %w", err)
 			}
+
+			err = fm.sftp.WriteFile(hashStr, downloadRes.Body)
 
 			size = int64(len(downloadRes.Body))
 			hash = sql.NullString{

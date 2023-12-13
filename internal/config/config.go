@@ -15,9 +15,9 @@ var C = Config{
 	MaxQueueSize:           100,
 	NumWorkers:             runtime.NumCPU(),
 	BrotliCompressionLevel: 7,
-	FilePath:               "./files",
 	DownloadTimeout:        30,
 	DefaultMaxSize:         100 * 1024 * 1024, // 100 MB
+	SFTPHost:               "localhost:22",
 }
 
 func InitConifg() error {

@@ -21,7 +21,7 @@ func (fm *FileManager) expiryWorker() {
 			}
 
 			for _, hash := range expiredHashes {
-				err = deleteFile(hash)
+				err = fm.sftp.DeleteFile(hash)
 				if err != nil {
 					log.Printf("error deleting file from disk %s: %s\n", hash, err)
 					continue

@@ -7,6 +7,7 @@ import (
 
 	"github.com/merlinfuchs/cdproxy/internal/config"
 	"github.com/merlinfuchs/cdproxy/internal/db"
+	"github.com/merlinfuchs/cdproxy/internal/sftp"
 	"github.com/merlinfuchs/cdproxy/internal/util"
 	"gopkg.in/guregu/null.v4"
 )
@@ -15,14 +16,16 @@ type FileManager struct {
 	sync.Mutex
 
 	db        *db.Database
+	sftp      *sftp.SFTPClient
 	queue     chan *FileQueueEntry
 	stop      chan struct{}
 	doneChans map[string]chan struct{}
 }
 
-func NewFileManager(db *db.Database) *FileManager {
+func NewFileManager(db *db.Database, sftp *sftp.SFTPClient) *FileManager {
 	return &FileManager{
 		db:        db,
+		sftp:      sftp,
 		queue:     make(chan *FileQueueEntry, config.C.MaxQueueSize),
 		stop:      make(chan struct{}),
 		doneChans: make(map[string]chan struct{}),
